@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ZevaAUTO</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --bg: #f0f2f5;
+    --card: #ffffff;
+    --text: #1a1a2e;
+    --muted: #7a8599;
+    --accent: #2563eb;
+    --accent2: #1d4ed8;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --border: #e5e7eb;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 90px;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    padding: 24px 20px 32px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 50%;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -20px;
+    width: 220px; height: 220px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .header-logo {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 1;
+  }
+  .header-sub {
+    font-size: 13px;
+    opacity: 0.8;
+    position: relative;
+    z-index: 1;
+  }
+  .points-badge {
+    position: absolute;
+    top: 24px; right: 20px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    z-index: 1;
+  }
+  .points-badge span {
+    opacity: 0.75;
+    font-weight: 400;
+  }
+
+  /* Nav tabs */
+  .nav {
+    display: flex;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-tab {
+    flex: 1;
+    padding: 12px 4px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .nav-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .nav-icon { font-size: 18px; display: block; margin-bottom: 2px; }
+
+  /* Content */
+  .page { display: none; padding: 16px; }
+  .page.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Services */
+  .service {
+    display: flex;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .service:last-child { border-bottom: none; }
+  .service:active { opacity: 0.7; }
+  .service-icon {
+    width: 44px; height: 44px;
+    background: #eff6ff;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  .service-info { flex: 1; }
+  .service-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+  .service-desc { font-size: 12px; color: var(--muted); }
+  .service-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .service-bonus {
+    font-size: 11px;
+    color: var(--green);
+    text-align: right;
+  }
+
+  /* Кнопка оплаты */
+  .pay-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: transform 0.1s, opacity 0.1s;
+  }
+  .pay-btn:active { transform: scale(0.98); opacity: 0.9; }
+  .pay-btn:disabled { opacity: 0.5; }
+
+  /* SBP block */
+  .sbp-block {
+    background: #eff6ff;
+    border-radius: 12px;
+    padding: 14px;
+    margin: 12px 0;
+  }
+  .sbp-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .sbp-row:last-child { margin-bottom: 0; }
+  .sbp-label { font-size: 13px; color: var(--muted); }
+  .sbp-value { font-size: 14px; font-weight: 600; color: var(--text); }
+  .sbp-phone {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    text-align: center;
+    padding: 8px 0;
+  }
+
+  /* Copy button */
+  .copy-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .copy-btn:active { opacity: 0.8; }
+
+  /* Баллы */
+  .points-big {
+    text-align: center;
+    padding: 20px 0;
+  }
+  .points-num {
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .points-label { font-size: 14px; color: var(--muted); margin-top: 6px; }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .stat-card {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+  }
+  .stat-num { font-size: 20px; font-weight: 700; color: var(--text); }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* История */
+  .history-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .history-item:last-child { border-bottom: none; }
+  .history-dot {
+    width: 36px; height: 36px;
+    background: var(--green-bg);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  .history-name { font-size: 14px; font-weight: 600; }
+  .history-date { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .history-amount { margin-left: auto; text-align: right; }
+  .history-price { font-size: 14px; font-weight: 700; }
+  .history-bonus { font-size: 11px; color: var(--green); }
+
+  /* Запись */
+  .booking-step { display: none; }
+  .booking-step.active { display: block; }
+  .step-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .date-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .date-btn {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .date-btn.selected {
+    border-color: var(--accent);
+    background: #eff6ff;
+    color: var(--accent);
+  }
+  .date-day { font-size: 18px; font-weight: 700; }
+  .date-weekday { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .date-btn.selected .date-weekday { color: var(--accent); }
+
+  .time-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .time-btn {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 6px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .time-btn.selected {
+    border-color: var(--accent);
+    background: #eff6ff;
+    color: var(--accent);
+  }
+
+  /* Реферал */
+  .ref-link-box {
+    background: #eff6ff;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    word-break: break-all;
+    margin: 12px 0;
+  }
+  .ref-bonus {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--green-bg);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .ref-bonus-icon { font-size: 24px; }
+  .ref-bonus-text { font-size: 14px; font-weight: 600; color: var(--green); }
+  .ref-bonus-sub { font-size: 12px; color: #166534; }
+
+  /* Success */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .success-screen.active { display: block; }
+  .success-icon { font-size: 64px; margin-bottom: 16px; }
+  .success-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .success-sub { font-size: 15px; color: var(--muted); }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 8px 0 12px;
+    z-index: 200;
+  }
+  .bottom-btn {
+    flex: 1;
+    text-align: center;
+    cursor: pointer;
+    padding: 4px;
+    transition: opacity 0.15s;
+  }
+  .bottom-btn:active { opacity: 0.7; }
+  .bottom-icon { font-size: 22px; display: block; }
+  .bottom-label { font-size: 10px; color: var(--muted); margin-top: 2px; font-weight: 500; }
+  .bottom-btn.active .bottom-label { color: var(--accent); }
+
+  .selected-service-bar {
+    background: var(--accent);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .back-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">🚗 ZevaAUTO</div>
+  <div class="header-sub">Автомойка • Работаем с 10:00 до 22:00</div>
+  <div class="points-badge" id="header-points"><span>баллов: </span>0</div>
+</div>
+
+<div class="nav">
+  <div class="nav-tab active" onclick="showPage('pay')">
+    <span class="nav-icon">💳</span>Оплата
+  </div>
+  <div class="nav-tab" onclick="showPage('book')">
+    <span class="nav-icon">📅</span>Запись
+  </div>
+  <div class="nav-tab" onclick="showPage('points')">
+    <span class="nav-icon">⭐</span>Баллы
+  </div>
+  <div class="nav-tab" onclick="showPage('ref')">
+    <span class="nav-icon">🎁</span>Друзья
+  </div>
+</div>
+
+<!-- ОПЛАТА -->
+<div class="page active" id="page-pay">
+
+  <div id="pay-step-1">
+    <div class="card">
+      <div class="card-title">Выбери услугу</div>
+
+      <div class="service" onclick="selectService('Мойка кузова', 650)">
+        <div class="service-icon">🚗</div>
+        <div class="service-info">
+          <div class="service-name">Кузов + Диски + Крыша</div>
+          <div class="service-desc">Полная наружная мойка</div>
+        </div>
+        <div>
+          <div class="service-price">650 ₽</div>
+          <div class="service-bonus">+65 баллов</div>
+        </div>
+      </div>
+
+      <div class="service" onclick="selectService('Салон', 400)">
+        <div class="service-icon">🪑</div>
+        <div class="service-info">
+          <div class="service-name">Салон</div>
+          <div class="service-desc">Чистка и уборка салона</div>
+        </div>
+        <div>
+          <div class="service-price">400 ₽</div>
+          <div class="service-bonus">+40 баллов</div>
+        </div>
+      </div>
+
+      <div class="service" onclick="selectService('Полная мойка', 1050)">
+        <div class="service-icon">✨</div>
+        <div class="service-info">
+          <div class="service-name">Всё вместе</div>
+          <div class="service-desc">Кузов + Диски + Салон</div>
+        </div>
+        <div>
+          <div class="service-price">1050 ₽</div>
+          <div class="service-bonus">+105 баллов</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pay-step-2" style="display:none;">
+    <button class="back-btn" onclick="backToServices()">← Назад</button>
+
+    <div class="card">
+      <div class="selected-service-bar">
+        <span id="pay-service-name">Мойка кузова</span>
+        <span id="pay-service-price">650 ₽</span>
+      </div>
+
+      <div class="card-title">Оплата через СБП</div>
+      <div class="sbp-block">
+        <div class="sbp-phone">+7 961 525-54-16</div>
+        <div class="sbp-row">
+          <span class="sbp-label">Банк</span>
+          <span class="sbp-value">Любой через СБП</span>
+        </div>
+        <div class="sbp-row">
+          <span class="sbp-label">Получатель</span>
+          <span class="sbp-value">ZevaAUTO</span>
+        </div>
+        <div class="sbp-row">
+          <span class="sbp-label">Сумма</span>
+          <span class="sbp-value" id="pay-amount-display" style="color: var(--accent); font-size: 18px;">650 ₽</span>
+        </div>
+      </div>
+      <button class="copy-btn" style="width:100%; margin-bottom: 12px;" onclick="copyPhone()">
+        📋 Скопировать номер
+      </button>
+      <p style="font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 12px;">
+        После перевода нажми кнопку ниже — администратор подтвердит оплату
+      </p>
+      <button class="pay-btn" onclick="confirmPaid()">
+        ✅ Я оплатил — подтвердите
+      </button>
+    </div>
+
+    <div class="card" style="background: var(--green-bg);">
+      <div style="font-size: 13px; color: #166534; font-weight: 600;">
+        🌟 После подтверждения оплаты тебе начислится <span id="pay-bonus">65</span> баллов!
+      </div>
+    </div>
+  </div>
+
+  <div id="pay-step-3" style="display:none;" class="success-screen">
+    <div class="success-icon">⏳</div>
+    <div class="success-title">Заявка отправлена!</div>
+    <div class="success-sub" style="margin-bottom: 24px;">
+      Администратор проверит оплату и подтвердит в течение нескольких минут
+    </div>
+    <button class="pay-btn" onclick="resetPay()">Вернуться на главную</button>
+  </div>
+</div>
+
+<!-- ЗАПИСЬ -->
+<div class="page" id="page-book">
+  <div class="booking-step active" id="book-step-1">
+    <div class="card">
+      <div class="card-title">Выбери услугу</div>
+      <div class="service" onclick="bookService('Мойка кузова', 650)">
+        <div class="service-icon">🚗</div>
+        <div class="service-info">
+          <div class="service-name">Кузов + Диски + Крыша</div>
+          <div class="service-desc">650 ₽</div>
+        </div>
+        <span style="font-size:20px; color: var(--muted);">›</span>
+      </div>
+      <div class="service" onclick="bookService('Салон', 400)">
+        <div class="service-icon">🪑</div>
+        <div class="service-info">
+          <div class="service-name">Салон</div>
+          <div class="service-desc">400 ₽</div>
+        </div>
+        <span style="font-size:20px; color: var(--muted);">›</span>
+      </div>
+      <div class="service" onclick="bookService('Полная мойка', 1050)">
+        <div class="service-icon">✨</div>
+        <div class="service-info">
+          <div class="service-name">Всё вместе</div>
+          <div class="service-desc">1050 ₽</div>
+        </div>
+        <span style="font-size:20px; color: var(--muted);">›</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="booking-step" id="book-step-2">
+    <button class="back-btn" onclick="bookBack(1)">← Назад</button>
+    <div class="card">
+      <div class="step-title">Выбери дату</div>
+      <div class="date-grid" id="date-grid"></div>
+      <button class="pay-btn" id="book-date-btn" disabled onclick="goBookStep3()">Выбрать время →</button>
+    </div>
+  </div>
+
+  <div class="booking-step" id="book-step-3">
+    <button class="back-btn" onclick="bookBack(2)">← Назад</button>
+    <div class="card">
+      <div class="step-title">Выбери время</div>
+      <div class="time-grid">
+        <div class="time-btn" onclick="selectTime('10:00', this)">10:00</div>
+        <div class="time-btn" onclick="selectTime('11:00', this)">11:00</div>
+        <div class="time-btn" onclick="selectTime('12:00', this)">12:00</div>
+        <div class="time-btn" onclick="selectTime('13:00', this)">13:00</div>
+        <div class="time-btn" onclick="selectTime('14:00', this)">14:00</div>
+        <div class="time-btn" onclick="selectTime('15:00', this)">15:00</div>
+        <div class="time-btn" onclick="selectTime('16:00', this)">16:00</div>
+        <div class="time-btn" onclick="selectTime('17:00', this)">17:00</div>
+        <div class="time-btn" onclick="selectTime('18:00', this)">18:00</div>
+      </div>
+      <button class="pay-btn" id="book-time-btn" disabled onclick="submitBooking()">Записаться ✓</button>
+    </div>
+  </div>
+
+  <div class="booking-step" id="book-step-4">
+    <div style="text-align:center; padding: 40px 20px;">
+      <div style="font-size: 64px; margin-bottom: 16px;">✅</div>
+      <div style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">Запись оформлена!</div>
+      <div style="font-size: 15px; color: var(--muted); margin-bottom: 6px;" id="book-confirm-text"></div>
+      <div style="font-size: 13px; color: var(--muted); margin-bottom: 24px;">Если планы изменятся — напиши @dortwe</div>
+      <button class="pay-btn" onclick="resetBook()">Отлично!</button>
+    </div>
+  </div>
+</div>
+
+<!-- БАЛЛЫ -->
+<div class="page" id="page-points">
+  <div class="card">
+    <div class="points-big">
+      <div class="points-num" id="points-display">0</div>
+      <div class="points-label">баллов на счету</div>
+    </div>
+    <div style="background: #eff6ff; border-radius: 12px; padding: 12px; text-align: center; font-size: 13px; color: var(--accent);">
+      💡 10% от каждой оплаты начисляется баллами
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" id="total-display">0 ₽</div>
+        <div class="stat-label">потрачено</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="washes-display">0</div>
+        <div class="stat-label">моек</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="history-card">
+    <div class="card-title">История моек</div>
+    <div id="history-list">
+      <div style="text-align: center; padding: 20px; color: var(--muted); font-size: 14px;">
+        Моек пока не было 🚗
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="background: var(--green-bg);">
+    <div style="font-size: 14px; color: #166534; font-weight: 600; margin-bottom: 6px;">
+      💎 Как списать баллы?
+    </div>
+    <div style="font-size: 13px; color: #166534;">
+      Напиши администратору <strong>@dortwe</strong> — он спишет баллы при следующей оплате
+    </div>
+  </div>
+</div>
+
+<!-- РЕФЕРАЛ -->
+<div class="page" id="page-ref">
+  <div class="card">
+    <div class="card-title">Реферальная программа</div>
+    <div style="font-size: 16px; font-weight: 700; margin-bottom: 14px;">
+      Приглашай друзей — получай баллы! 🎉
+    </div>
+
+    <div class="ref-bonus">
+      <div class="ref-bonus-icon">💎</div>
+      <div>
+        <div class="ref-bonus-text">+100 баллов</div>
+        <div class="ref-bonus-sub">за каждого приглашённого друга</div>
+      </div>
+    </div>
+
+    <div class="card-title" style="margin-top: 8px;">Твоя ссылка</div>
+    <div class="ref-link-box" id="ref-link">Загрузка...</div>
+    <button class="pay-btn" onclick="shareRef()">📤 Поделиться ссылкой</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Как это работает</div>
+    <div style="font-size: 14px; color: var(--text); line-height: 1.7;">
+      1️⃣ Поделись ссылкой с другом<br>
+      2️⃣ Друг регистрируется в боте<br>
+      3️⃣ Тебе автоматически приходит <strong>+100 баллов</strong><br>
+      4️⃣ Баллами можно оплачивать мойки!
+    </div>
+  </div>
+</div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+}
+
+const userData = {
+  points: 0,
+  total: 0,
+  washes: 0,
+  history: [],
+  refCode: 'DEMO01'
+};
+
+let selectedService = '';
+let selectedPrice = 0;
+let selectedDate = '';
+let selectedTime = '';
+let bookServiceName = '';
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const tabs = ['pay', 'book', 'points', 'ref'];
+  const idx = tabs.indexOf(name);
+  document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+}
+
+function selectService(name, price) {
+  selectedService = name;
+  selectedPrice = price;
+  const bonus = Math.round(price * 0.10);
+  document.getElementById('pay-service-name').textContent = name;
+  document.getElementById('pay-service-price').textContent = price + ' ₽';
+  document.getElementById('pay-amount-display').textContent = price + ' ₽';
+  document.getElementById('pay-bonus').textContent = bonus;
+  document.getElementById('pay-step-1').style.display = 'none';
+  document.getElementById('pay-step-2').style.display = 'block';
+  document.getElementById('pay-step-2').classList.add('active');
+}
+
+function backToServices() {
+  document.getElementById('pay-step-1').style.display = 'block';
+  document.getElementById('pay-step-2').style.display = 'none';
+}
+
+function copyPhone() {
+  navigator.clipboard?.writeText('+79615255416').catch(() => {});
+  const btn = event.target;
+  btn.textContent = '✅ Скопировано!';
+  setTimeout(() => btn.textContent = '📋 Скопировать номер', 2000);
+}
+
+function confirmPaid() {
+  if (tg) {
+    tg.sendData(JSON.stringify({
+      action: 'paid',
+      service: selectedService,
+      amount: selectedPrice
+    }));
+  }
+  document.getElementById('pay-step-2').style.display = 'none';
+  const s3 = document.getElementById('pay-step-3');
+  s3.style.display = 'block';
+  s3.classList.add('active');
+}
+
+function resetPay() {
+  document.getElementById('pay-step-3').style.display = 'none';
+  document.getElementById('pay-step-3').classList.remove('active');
+  document.getElementById('pay-step-1').style.display = 'block';
+  showPage('pay');
+}
+
+function buildDates() {
+  const grid = document.getElementById('date-grid');
+  grid.innerHTML = '';
+  const days = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  const months = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+  for (let i = 1; i <= 6; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    const btn = document.createElement('div');
+    btn.className = 'date-btn';
+    btn.innerHTML = `<div class="date-day">${d.getDate()}</div><div class="date-weekday">${days[d.getDay()]} ${months[d.getMonth()]}</div>`;
+    const dateStr = d.toISOString().split('T')[0];
+    btn.onclick = function() {
+      document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('selected'));
+      this.classList.add('selected');
+      selectedDate = dateStr;
+      document.getElementById('book-date-btn').disabled = false;
+    };
+    grid.appendChild(btn);
+  }
+}
+
+function bookService(name, price) {
+  bookServiceName = name;
+  selectedPrice = price;
+  buildDates();
+  document.getElementById('book-step-1').classList.remove('active');
+  document.getElementById('book-step-2').classList.add('active');
+}
+
+function bookBack(step) {
+  document.querySelectorAll('.booking-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('book-step-' + step).classList.add('active');
+}
+
+function goBookStep3() {
+  if (!selectedDate) return;
+  document.getElementById('book-step-2').classList.remove('active');
+  document.getElementById('book-step-3').classList.add('active');
+}
+
+function selectTime(time, el) {
+  document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTime = time;
+  document.getElementById('book-time-btn').disabled = false;
+}
+
+function submitBooking() {
+  if (!selectedDate || !selectedTime) return;
+  if (tg) {
+    tg.sendData(JSON.stringify({
+      action: 'booking',
+      service: bookServiceName,
+      date: selectedDate,
+      time: selectedTime
+    }));
+  }
+  const d = new Date(selectedDate);
+  const fmt = d.toLocaleDateString('ru-RU', {day:'numeric', month:'long'});
+  document.getElementById('book-confirm-text').textContent =
+    bookServiceName + ' • ' + fmt + ' в ' + selectedTime;
+  document.getElementById('book-step-3').classList.remove('active');
+  document.getElementById('book-step-4').classList.add('active');
+}
+
+function resetBook() {
+  document.querySelectorAll('.booking-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('book-step-1').classList.add('active');
+  selectedDate = '';
+  selectedTime = '';
+  showPage('book');
+}
+
+function shareRef() {
+  const link = 'https://t.me/your_bot?start=' + userData.refCode;
+  if (tg?.shareUrl) {
+    tg.shareUrl(link, 'Помойка машину с выгодой! 🚗 Запишись через ZevaAUTO:');
+  } else {
+    navigator.clipboard?.writeText(link).catch(() => {});
+    alert('Ссылка скопирована!');
+  }
+}
+
+function updateUI() {
+  document.getElementById('points-display').textContent = userData.points;
+  document.getElementById('total-display').textContent = userData.total + ' ₽';
+  document.getElementById('washes-display').textContent = userData.washes;
+  document.getElementById('header-points').innerHTML = '<span>баллов: </span>' + userData.points;
+
+  const bot = tg?.initDataUnsafe?.bot?.username || 'your_bot';
+  const code = tg?.initDataUnsafe?.user?.id
+    ? userData.refCode
+    : 'DEMO01';
+  document.getElementById('ref-link').textContent = 'https://t.me/' + bot + '?start=' + code;
+
+  const list = document.getElementById('history-list');
+  if (userData.history.length > 0) {
+    list.innerHTML = userData.history.map(h => `
+      <div class="history-item">
+        <div class="history-dot">🚗</div>
+        <div>
+          <div class="history-name">${h.service}</div>
+          <div class="history-date">${h.date}</div>
+        </div>
+        <div class="history-amount">
+          <div class="history-price">${h.amount} ₽</div>
+          <div class="history-bonus">+${h.bonus} ⭐</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+updateUI();
+</script>
+</body>
+</html>
