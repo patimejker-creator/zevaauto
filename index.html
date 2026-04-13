@@ -2,874 +2,869 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ZevaAUTO</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#0d0d0f;min-height:100vh;color:#f0f0f0}
 
-  :root {
-    --bg: #f0f2f5;
-    --card: #ffffff;
-    --text: #1a1a2e;
-    --muted: #7a8599;
-    --accent: #2563eb;
-    --accent2: #1d4ed8;
-    --green: #16a34a;
-    --green-bg: #dcfce7;
-    --border: #e5e7eb;
-    --shadow: 0 2px 12px rgba(0,0,0,0.08);
-  }
+/* ---- DARK PALETTE ---- */
+:root{
+  --bg0:#0d0d0f;
+  --bg1:#151519;
+  --bg2:#1e1e25;
+  --bg3:#26262f;
+  --border:#2e2e3a;
+  --accent:#7c7fff;
+  --accent-dark:#5a5cf8;
+  --text1:#f0f0f5;
+  --text2:#9090a8;
+  --green:#34d988;
+}
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding-bottom: 90px;
-  }
+/* ---- ANIMATIONS ---- */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes ripple{0%{transform:scale(0);opacity:.5}100%{transform:scale(4);opacity:0}}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{0%{transform:scale(.93);opacity:0}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 
-  /* Header */
-  .header {
-    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-    padding: 24px 20px 32px;
-    color: white;
-    position: relative;
-    overflow: hidden;
-  }
-  .header::before {
-    content: '';
-    position: absolute;
-    top: -40px; right: -40px;
-    width: 180px; height: 180px;
-    background: rgba(255,255,255,0.07);
-    border-radius: 50%;
-  }
-  .header::after {
-    content: '';
-    position: absolute;
-    bottom: -60px; left: -20px;
-    width: 220px; height: 220px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 50%;
-  }
-  .header-logo {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    margin-bottom: 4px;
-    position: relative;
-    z-index: 1;
-  }
-  .header-sub {
-    font-size: 13px;
-    opacity: 0.8;
-    position: relative;
-    z-index: 1;
-  }
-  .points-badge {
-    position: absolute;
-    top: 24px; right: 20px;
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 13px;
-    font-weight: 600;
-    color: white;
-    z-index: 1;
-  }
-  .points-badge span {
-    opacity: 0.75;
-    font-weight: 400;
-  }
+.screen.active{animation:fadeSlideIn .25s ease}
 
-  /* Nav tabs */
-  .nav {
-    display: flex;
-    background: var(--card);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .nav-tab {
-    flex: 1;
-    padding: 12px 4px;
-    text-align: center;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--muted);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-  }
-  .nav-tab.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
-  .nav-icon { font-size: 18px; display: block; margin-bottom: 2px; }
+/* ---- HEADER ---- */
+.header{background:#0d0d0f;color:#fff;padding:0;text-align:center;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border)}
+.header-top{background:linear-gradient(135deg,#111118 0%,#16162a 100%);padding:14px 16px 10px}
+.header-logo{font-size:23px;font-weight:700;letter-spacing:1.5px;color:#fff;margin-bottom:2px}
+.header-tagline{font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.5px;font-weight:500}
+.header-hours{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;background:rgba(255,255,255,.04);padding:7px 0;color:rgba(255,255,255,.6);font-weight:500}
+.hours-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite;box-shadow:0 0 6px var(--green)}
 
-  /* Content */
-  .page { display: none; padding: 16px; }
-  .page.active { display: block; }
+/* ---- NAV ---- */
+.nav{display:flex;overflow-x:auto;background:#111118;border-bottom:1px solid var(--border);scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{flex:0 0 auto;padding:10px 14px;font-size:12px;font-weight:600;color:rgba(255,255,255,.4);background:none;border:none;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s;font-family:'Inter',sans-serif}
+.nav-btn.active{color:#fff;border-bottom-color:var(--accent)}
 
-  /* Cards */
-  .card {
-    background: var(--card);
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 12px;
-    box-shadow: var(--shadow);
-  }
-  .card-title {
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 8px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
+/* ---- SCREENS ---- */
+.screen{display:none;padding:16px;max-width:480px;margin:0 auto}
+.screen.active{display:block}
 
-  /* Services */
-  .service {
-    display: flex;
-    align-items: center;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    transition: opacity 0.15s;
-  }
-  .service:last-child { border-bottom: none; }
-  .service:active { opacity: 0.7; }
-  .service-icon {
-    width: 44px; height: 44px;
-    background: #eff6ff;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-    margin-right: 12px;
-    flex-shrink: 0;
-  }
-  .service-info { flex: 1; }
-  .service-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-  .service-desc { font-size: 12px; color: var(--muted); }
-  .service-price {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--accent);
-  }
-  .service-bonus {
-    font-size: 11px;
-    color: var(--green);
-    text-align: right;
-  }
+/* ---- CARDS ---- */
+.card{background:var(--bg1);border-radius:16px;border:1px solid var(--border);padding:16px;margin-bottom:12px}
+.card-title{font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:.6px}
 
-  /* Кнопка оплаты */
-  .pay-btn {
-    width: 100%;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    color: white;
-    border: none;
-    border-radius: 14px;
-    padding: 16px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: transform 0.1s, opacity 0.1s;
-  }
-  .pay-btn:active { transform: scale(0.98); opacity: 0.9; }
-  .pay-btn:disabled { opacity: 0.5; }
+/* ---- PRICE ROWS ---- */
+.price-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)}
+.price-row:last-child{border-bottom:none}
+.price-label{font-size:14px;font-weight:600;color:var(--text1)}
+.price-val{font-size:15px;font-weight:700;color:var(--accent)}
 
-  /* SBP block */
-  .sbp-block {
-    background: #eff6ff;
-    border-radius: 12px;
-    padding: 14px;
-    margin: 12px 0;
-  }
-  .sbp-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  .sbp-row:last-child { margin-bottom: 0; }
-  .sbp-label { font-size: 13px; color: var(--muted); }
-  .sbp-value { font-size: 14px; font-weight: 600; color: var(--text); }
-  .sbp-phone {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--accent);
-    text-align: center;
-    padding: 8px 0;
-  }
+/* ---- BADGES ---- */
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px;background:rgba(124,127,255,.15);color:var(--accent);vertical-align:middle}
+.badge-green{background:rgba(52,217,136,.15);color:var(--green)}
 
-  /* Copy button */
-  .copy-btn {
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.15s;
-  }
-  .copy-btn:active { opacity: 0.8; }
+/* ---- BUTTONS — main + secondary ---- */
+.btn{
+  display:block;width:100%;padding:14px;border-radius:14px;border:none;
+  font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;
+  font-family:'Inter',sans-serif;
+  position:relative;overflow:hidden;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease, background .15s;
+}
+.btn-primary{background:linear-gradient(135deg,var(--accent-dark),var(--accent));color:#fff;box-shadow:0 4px 20px rgba(124,127,255,.35)}
+.btn-primary:active{transform:scale(.96);box-shadow:0 2px 8px rgba(124,127,255,.2)}
+.btn-secondary{background:var(--bg2);color:var(--text1);border:1px solid var(--border)}
+.btn-secondary:active{transform:scale(.96)}
 
-  /* Баллы */
-  .points-big {
-    text-align: center;
-    padding: 20px 0;
-  }
-  .points-num {
-    font-size: 52px;
-    font-weight: 700;
-    color: var(--accent);
-    line-height: 1;
-  }
-  .points-label { font-size: 14px; color: var(--muted); margin-top: 6px; }
+/* ---- RIPPLE ---- */
+.ripple-el{position:absolute;border-radius:50%;background:rgba(255,255,255,.25);width:40px;height:40px;margin-top:-20px;margin-left:-20px;animation:ripple .55s linear;pointer-events:none}
 
-  .stats-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 12px;
-  }
-  .stat-card {
-    background: var(--bg);
-    border-radius: 12px;
-    padding: 12px;
-    text-align: center;
-  }
-  .stat-num { font-size: 20px; font-weight: 700; color: var(--text); }
-  .stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+/* ---- SERVICE / DATE / TIME BUTTONS ---- */
+.service-btn{
+  display:flex;align-items:center;justify-content:space-between;width:100%;
+  padding:14px 16px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px;
+  font-family:'Inter',sans-serif;color:var(--text1);
+  position:relative;overflow:hidden;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1), border-color .15s, background .15s, box-shadow .15s;
+}
+.service-btn:active{transform:scale(.97);background:rgba(124,127,255,.12);border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,127,255,.15)}
+.service-btn.selected{background:rgba(124,127,255,.12);border-color:var(--accent);color:var(--accent)}
+.service-price{font-weight:700;color:var(--accent)}
 
-  /* История */
-  .history-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .history-item:last-child { border-bottom: none; }
-  .history-dot {
-    width: 36px; height: 36px;
-    background: var(--green-bg);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-    margin-right: 12px;
-    flex-shrink: 0;
-  }
-  .history-name { font-size: 14px; font-weight: 600; }
-  .history-date { font-size: 12px; color: var(--muted); margin-top: 1px; }
-  .history-amount { margin-left: auto; text-align: right; }
-  .history-price { font-size: 14px; font-weight: 700; }
-  .history-bonus { font-size: 11px; color: var(--green); }
+.brand-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.brand-btn{
+  padding:10px 4px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:12px;font-size:12px;font-weight:600;cursor:pointer;text-align:center;
+  font-family:'Inter',sans-serif;color:var(--text1);
+  position:relative;overflow:hidden;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1), border-color .15s, background .15s;
+}
+.brand-btn:active{transform:scale(.95)}
+.brand-btn.selected{background:rgba(124,127,255,.15);border-color:var(--accent);color:var(--accent)}
 
-  /* Запись */
-  .booking-step { display: none; }
-  .booking-step.active { display: block; }
-  .step-title {
-    font-size: 17px;
-    font-weight: 700;
-    margin-bottom: 14px;
-  }
-  .date-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-bottom: 14px;
-  }
-  .date-btn {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 6px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .date-btn.selected {
-    border-color: var(--accent);
-    background: #eff6ff;
-    color: var(--accent);
-  }
-  .date-day { font-size: 18px; font-weight: 700; }
-  .date-weekday { font-size: 11px; color: var(--muted); margin-top: 1px; }
-  .date-btn.selected .date-weekday { color: var(--accent); }
+.date-btn{
+  padding:11px 14px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:7px;
+  width:100%;text-align:left;font-family:'Inter',sans-serif;color:var(--text1);
+  position:relative;overflow:hidden;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1), border-color .15s, background .15s;
+}
+.date-btn:active{transform:scale(.98)}
+.date-btn.selected{background:rgba(124,127,255,.12);border-color:var(--accent);color:var(--accent)}
 
-  .time-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-bottom: 14px;
-  }
-  .time-btn {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 6px;
-    text-align: center;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .time-btn.selected {
-    border-color: var(--accent);
-    background: #eff6ff;
-    color: var(--accent);
-  }
+.time-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.time-btn{
+  padding:11px 0;background:var(--bg2);border:1px solid var(--border);
+  border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;text-align:center;
+  font-family:'Inter',sans-serif;color:var(--text1);
+  position:relative;overflow:hidden;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1), border-color .15s, background .15s;
+}
+.time-btn:active{transform:scale(.95)}
+.time-btn.selected{background:rgba(124,127,255,.12);border-color:var(--accent);color:var(--accent)}
 
-  /* Реферал */
-  .ref-link-box {
-    background: #eff6ff;
-    border-radius: 12px;
-    padding: 14px;
-    font-size: 13px;
-    color: var(--accent);
-    font-weight: 600;
-    word-break: break-all;
-    margin: 12px 0;
-  }
-  .ref-bonus {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--green-bg);
-    border-radius: 12px;
-    padding: 12px 14px;
-    margin-bottom: 10px;
-  }
-  .ref-bonus-icon { font-size: 24px; }
-  .ref-bonus-text { font-size: 14px; font-weight: 600; color: var(--green); }
-  .ref-bonus-sub { font-size: 12px; color: #166534; }
+/* ---- STATS ---- */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat{background:var(--bg2);border-radius:14px;padding:14px;border:1px solid var(--border)}
+.stat-label{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+.stat-val{font-size:22px;font-weight:700;color:var(--text1)}
 
-  /* Success */
-  .success-screen {
-    display: none;
-    text-align: center;
-    padding: 40px 20px;
-  }
-  .success-screen.active { display: block; }
-  .success-icon { font-size: 64px; margin-bottom: 16px; }
-  .success-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-  .success-sub { font-size: 15px; color: var(--muted); }
+/* ---- SBP BOX ---- */
+.sbp-box{background:rgba(52,217,136,.07);border:1px solid rgba(52,217,136,.3);border-radius:14px;padding:14px;margin:12px 0}
+.sbp-phone{font-size:20px;font-weight:700;color:var(--green);letter-spacing:1px;text-align:center;margin:6px 0}
+.sbp-label{font-size:12px;font-weight:600;color:var(--green);text-align:center}
 
-  /* Bottom nav */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: var(--card);
-    border-top: 1px solid var(--border);
-    display: flex;
-    padding: 8px 0 12px;
-    z-index: 200;
-  }
-  .bottom-btn {
-    flex: 1;
-    text-align: center;
-    cursor: pointer;
-    padding: 4px;
-    transition: opacity 0.15s;
-  }
-  .bottom-btn:active { opacity: 0.7; }
-  .bottom-icon { font-size: 22px; display: block; }
-  .bottom-label { font-size: 10px; color: var(--muted); margin-top: 2px; font-weight: 500; }
-  .bottom-btn.active .bottom-label { color: var(--accent); }
+/* ---- TIMELINE ---- */
+.timeline{position:relative;padding-left:20px}
+.timeline::before{content:'';position:absolute;left:6px;top:6px;bottom:6px;width:1px;background:var(--border)}
+.tl-item{position:relative;padding:0 0 16px 14px}
+.tl-dot{position:absolute;left:-14px;top:4px;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent)}
+.tl-title{font-size:14px;font-weight:700;color:var(--text1)}
+.tl-sub{font-size:12px;font-weight:500;color:var(--text2);margin-top:3px}
 
-  .selected-service-bar {
-    background: var(--accent);
-    color: white;
-    padding: 10px 16px;
-    border-radius: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-    font-size: 14px;
-    font-weight: 600;
-  }
+/* ---- REVIEWS ---- */
+.review-star{font-size:24px;cursor:pointer;padding:4px;transition:transform .15s cubic-bezier(.34,1.56,.64,1)}
+.review-star:hover,.review-star.on{transform:scale(1.3)}
 
-  .back-btn {
-    background: none;
-    border: none;
-    color: var(--accent);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 0;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
+/* ---- SUCCESS ---- */
+.success-box{text-align:center;padding:24px 16px}
+.success-icon{width:60px;height:60px;border-radius:50%;background:rgba(52,217,136,.15);border:1px solid rgba(52,217,136,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:26px;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+
+/* ---- REF CODE ---- */
+.ref-code{font-size:22px;font-weight:700;letter-spacing:3px;color:var(--accent);background:rgba(124,127,255,.1);border:1px solid rgba(124,127,255,.3);padding:12px 20px;border-radius:14px;text-align:center;margin:10px 0;cursor:pointer;transition:transform .18s cubic-bezier(.34,1.56,.64,1)}
+.ref-code:active{transform:scale(.97)}
+
+/* ---- MISC ---- */
+.step-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.step-back{background:none;border:none;cursor:pointer;font-size:20px;color:var(--text2);padding:0;line-height:1;transition:transform .15s;font-weight:700}
+.step-back:active{transform:scale(.85)}
+.section-divider{font-size:11px;font-weight:700;color:var(--text2);margin:10px 0 6px;text-transform:uppercase;letter-spacing:.7px}
+.contact-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.contact-row:last-child{border-bottom:none}
+.contact-icon{width:34px;height:34px;border-radius:50%;background:rgba(124,127,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;color:var(--accent);font-weight:700}
+.contact-info{flex:1}
+.contact-label{font-size:12px;font-weight:600;color:var(--text2)}
+.contact-val{font-size:14px;font-weight:700;color:var(--text1)}
+.booking-step{display:none}
+.booking-step.active{display:block}
+.hidden{display:none!important}
+.pay-flow{display:none}
+.pay-flow.active{display:block}
+textarea{background:var(--bg2)!important;border:1px solid var(--border)!important;color:var(--text1)!important;border-radius:12px!important}
+textarea::placeholder{color:var(--text2)}
 </style>
 </head>
 <body>
-
 <div class="header">
-  <div class="header-logo">🚗 ZevaAUTO</div>
-  <div class="header-sub">Автомойка • Работаем с 10:00 до 22:00</div>
-  <div class="points-badge" id="header-points"><span>баллов: </span>0</div>
+  <div class="header-top">
+    <div class="header-logo">ZEVA<span style="color:#a5b4fc">AUTO</span></div>
+    <div class="header-tagline">Профессиональная мойка автомобилей</div>
+  </div>
+  <div class="header-hours">
+    <span class="hours-dot"></span>
+    Работаем с 10:00 до 22:00 · Каждый день
+  </div>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showScreen('home')">Главная</button>
+    <button class="nav-btn" onclick="showScreen('pay')">Оплатить</button>
+    <button class="nav-btn" onclick="showScreen('booking')">Запись</button>
+    <button class="nav-btn" onclick="showScreen('points')">Баллы</button>
+    <button class="nav-btn" onclick="showScreen('price')">Прайс</button>
+    <button class="nav-btn" onclick="showScreen('reviews')">Отзывы</button>
+    <button class="nav-btn" onclick="showScreen('referral')">Рефералы</button>
+    <button class="nav-btn" onclick="showScreen('contacts')">Контакты</button>
+    <button class="nav-btn" onclick="showScreen('support')">🤖 Поддержка</button>
+  </nav>
 </div>
 
-<div class="nav">
-  <div class="nav-tab active" onclick="showPage('pay')">
-    <span class="nav-icon">💳</span>Оплата
+<!-- HOME -->
+<div id="screen-home" class="screen active">
+  <div class="card" style="text-align:center;padding:20px 16px">
+    <div style="font-size:40px;margin-bottom:10px">🚗</div>
+    <div style="font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px">Привет! 👋</div>
+    <div style="font-size:14px;color:var(--color-text-secondary)">Добро пожаловать в ZevaAUTO — твой помощник по записи и оплате мойки</div>
   </div>
-  <div class="nav-tab" onclick="showPage('book')">
-    <span class="nav-icon">📅</span>Запись
-  </div>
-  <div class="nav-tab" onclick="showPage('points')">
-    <span class="nav-icon">⭐</span>Баллы
-  </div>
-  <div class="nav-tab" onclick="showPage('ref')">
-    <span class="nav-icon">🎁</span>Друзья
-  </div>
-</div>
+  <button class="btn btn-primary" onclick="showScreen('pay')">💰 Оплатить мойку</button>
+  <button class="btn btn-secondary" onclick="showScreen('booking')">📅 Записаться на мойку</button>
+  <button class="btn btn-secondary" onclick="showScreen('points')">⭐ Мои баллы</button>
+  <button class="btn btn-secondary" onclick="showScreen('support')">🤖 Поддержка ИИ</button>
 
-<!-- ОПЛАТА -->
-<div class="page active" id="page-pay">
-
-  <div id="pay-step-1">
-    <div class="card">
-      <div class="card-title">Выбери услугу</div>
-
-      <div class="service" onclick="selectService('Мойка кузова', 650)">
-        <div class="service-icon">🚗</div>
-        <div class="service-info">
-          <div class="service-name">Кузов + Диски + Крыша</div>
-          <div class="service-desc">Полная наружная мойка</div>
-        </div>
-        <div>
-          <div class="service-price">650 ₽</div>
-          <div class="service-bonus">+65 баллов</div>
-        </div>
-      </div>
-
-      <div class="service" onclick="selectService('Салон', 400)">
-        <div class="service-icon">🪑</div>
-        <div class="service-info">
-          <div class="service-name">Салон</div>
-          <div class="service-desc">Чистка и уборка салона</div>
-        </div>
-        <div>
-          <div class="service-price">400 ₽</div>
-          <div class="service-bonus">+40 баллов</div>
-        </div>
-      </div>
-
-      <div class="service" onclick="selectService('Полная мойка', 1050)">
-        <div class="service-icon">✨</div>
-        <div class="service-info">
-          <div class="service-name">Всё вместе</div>
-          <div class="service-desc">Кузов + Диски + Салон</div>
-        </div>
-        <div>
-          <div class="service-price">1050 ₽</div>
-          <div class="service-bonus">+105 баллов</div>
-        </div>
-      </div>
+  <div class="card">
+    <div class="card-title">Быстрый прайс</div>
+    <div class="price-row">
+      <span class="price-label">💧 Без сушки (Эконом)</span>
+      <span class="price-val">600 ₽</span>
+    </div>
+    <div class="price-row">
+      <span class="price-label">🚗 Кузов + Диски + Крыша (Стандарт)</span>
+      <span class="price-val">от 650 ₽</span>
+    </div>
+    <div class="price-row">
+      <span class="price-label">✨ Премиум с полировкой</span>
+      <span class="price-val">800 ₽</span>
+    </div>
+    <div class="price-row">
+      <span class="price-label">🪑 Салон</span>
+      <span class="price-val">от 400 ₽</span>
+    </div>
+    <div class="price-row">
+      <span class="price-label">🚗🪑 Всё вместе</span>
+      <span class="price-val">от 1050 ₽</span>
     </div>
   </div>
 
-  <div id="pay-step-2" style="display:none;">
-    <button class="back-btn" onclick="backToServices()">← Назад</button>
+  <div class="card">
+    <div class="card-title">Бонусная программа</div>
+    <div style="font-size:14px;color:var(--color-text-primary)">С каждой мойки начисляем <strong>10% баллами</strong> — оплачивай следующие визиты!</div>
+    <div style="margin-top:8px;font-size:13px;color:var(--color-text-secondary)">Пригласи друга — получи +100 баллов</div>
+  </div>
+</div>
 
+<!-- PAY -->
+<div id="screen-pay" class="screen">
+  <!-- Step 1: brand -->
+  <div id="pay-step1" class="pay-flow active">
+    <div class="card-title" style="margin-bottom:8px;font-size:15px;font-weight:500;color:var(--color-text-primary)">Шаг 1 из 3 — Марка авто</div>
     <div class="card">
-      <div class="selected-service-bar">
-        <span id="pay-service-name">Мойка кузова</span>
-        <span id="pay-service-price">650 ₽</span>
-      </div>
+      <div class="section-divider">Китайские марки (стандартная цена)</div>
+      <div class="brand-grid" id="brand-cn"></div>
+      <div class="section-divider" style="margin-top:10px">Другие марки (+100 ₽)</div>
+      <div class="brand-grid" id="brand-other"></div>
+    </div>
+  </div>
 
-      <div class="card-title">Оплата через СБП</div>
-      <div class="sbp-block">
+  <!-- Step 2: service -->
+  <div id="pay-step2" class="pay-flow hidden">
+    <div class="step-header">
+      <button class="step-back" onclick="payGoto(1)">&#8592;</button>
+      <div style="font-size:15px;font-weight:500;color:var(--color-text-primary)">Шаг 2 из 3 — Услуга</div>
+    </div>
+    <div id="pay-brand-note" class="card" style="padding:10px 14px;margin-bottom:10px;font-size:13px;color:var(--color-text-secondary)"></div>
+    <div id="pay-services"></div>
+  </div>
+
+  <!-- Step 3: payment -->
+  <div id="pay-step3" class="pay-flow hidden">
+    <div class="step-header">
+      <button class="step-back" onclick="payGoto(2)">&#8592;</button>
+      <div style="font-size:15px;font-weight:500;color:var(--color-text-primary)">Шаг 3 из 3 — Оплата</div>
+    </div>
+    <div class="card">
+      <div id="pay-summary" style="font-size:14px;color:var(--color-text-primary);margin-bottom:12px"></div>
+      <div class="sbp-box">
+        <div class="sbp-label">Переведите через СБП</div>
         <div class="sbp-phone">+7 961 525-54-16</div>
-        <div class="sbp-row">
-          <span class="sbp-label">Банк</span>
-          <span class="sbp-value">Любой через СБП</span>
-        </div>
-        <div class="sbp-row">
-          <span class="sbp-label">Получатель</span>
-          <span class="sbp-value">ZevaAUTO</span>
-        </div>
-        <div class="sbp-row">
-          <span class="sbp-label">Сумма</span>
-          <span class="sbp-value" id="pay-amount-display" style="color: var(--accent); font-size: 18px;">650 ₽</span>
-        </div>
+        <div class="sbp-label">Любой банк · Получатель: ZevaAUTO</div>
       </div>
-      <button class="copy-btn" style="width:100%; margin-bottom: 12px;" onclick="copyPhone()">
-        📋 Скопировать номер
-      </button>
-      <p style="font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 12px;">
-        После перевода нажми кнопку ниже — администратор подтвердит оплату
-      </p>
-      <button class="pay-btn" onclick="confirmPaid()">
-        ✅ Я оплатил — подтвердите
-      </button>
-    </div>
-
-    <div class="card" style="background: var(--green-bg);">
-      <div style="font-size: 13px; color: #166534; font-weight: 600;">
-        🌟 После подтверждения оплаты тебе начислится <span id="pay-bonus">65</span> баллов!
-      </div>
+      <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:12px">После оплаты нажмите кнопку — баллы начислятся после проверки</div>
+      <button class="btn btn-primary" onclick="payConfirm()">✅ Я оплатил</button>
     </div>
   </div>
 
-  <div id="pay-step-3" style="display:none;" class="success-screen">
-    <div class="success-icon">⏳</div>
-    <div class="success-title">Заявка отправлена!</div>
-    <div class="success-sub" style="margin-bottom: 24px;">
-      Администратор проверит оплату и подтвердит в течение нескольких минут
+  <!-- Step 4: success -->
+  <div id="pay-step4" class="pay-flow hidden">
+    <div class="card success-box">
+      <div class="success-icon">✓</div>
+      <div style="font-size:17px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px">Заявка отправлена!</div>
+      <div style="font-size:14px;color:var(--color-text-secondary)">Администратор проверит платёж и начислит баллы. Обычно это занимает несколько минут.</div>
+      <button class="btn btn-secondary" style="margin-top:16px" onclick="payReset()">На главную</button>
     </div>
-    <button class="pay-btn" onclick="resetPay()">Вернуться на главную</button>
-  </div>
-</div>
 
-<!-- ЗАПИСЬ -->
-<div class="page" id="page-book">
-  <div class="booking-step active" id="book-step-1">
     <div class="card">
-      <div class="card-title">Выбери услугу</div>
-      <div class="service" onclick="bookService('Мойка кузова', 650)">
-        <div class="service-icon">🚗</div>
-        <div class="service-info">
-          <div class="service-name">Кузов + Диски + Крыша</div>
-          <div class="service-desc">650 ₽</div>
-        </div>
-        <span style="font-size:20px; color: var(--muted);">›</span>
+      <div class="card-title">Оцени качество</div>
+      <div style="display:flex;gap:4px;justify-content:center;margin-bottom:8px" id="stars-row"></div>
+      <div id="review-prompt" style="display:none;margin-top:8px">
+        <textarea id="review-text" placeholder="Напиши пару слов о мойке..." style="width:100%;height:80px;resize:none;padding:10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);font-size:14px;font-family:var(--font-sans);background:var(--color-background-secondary);color:var(--color-text-primary)" ></textarea>
+        <button class="btn btn-primary" style="margin-top:8px" onclick="submitReview()">Отправить отзыв</button>
+        <button class="btn btn-secondary" onclick="skipReview()">Пропустить</button>
       </div>
-      <div class="service" onclick="bookService('Салон', 400)">
-        <div class="service-icon">🪑</div>
-        <div class="service-info">
-          <div class="service-name">Салон</div>
-          <div class="service-desc">400 ₽</div>
-        </div>
-        <span style="font-size:20px; color: var(--muted);">›</span>
-      </div>
-      <div class="service" onclick="bookService('Полная мойка', 1050)">
-        <div class="service-icon">✨</div>
-        <div class="service-info">
-          <div class="service-name">Всё вместе</div>
-          <div class="service-desc">1050 ₽</div>
-        </div>
-        <span style="font-size:20px; color: var(--muted);">›</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="booking-step" id="book-step-2">
-    <button class="back-btn" onclick="bookBack(1)">← Назад</button>
-    <div class="card">
-      <div class="step-title">Выбери дату</div>
-      <div class="date-grid" id="date-grid"></div>
-      <button class="pay-btn" id="book-date-btn" disabled onclick="goBookStep3()">Выбрать время →</button>
-    </div>
-  </div>
-
-  <div class="booking-step" id="book-step-3">
-    <button class="back-btn" onclick="bookBack(2)">← Назад</button>
-    <div class="card">
-      <div class="step-title">Выбери время</div>
-      <div class="time-grid">
-        <div class="time-btn" onclick="selectTime('10:00', this)">10:00</div>
-        <div class="time-btn" onclick="selectTime('11:00', this)">11:00</div>
-        <div class="time-btn" onclick="selectTime('12:00', this)">12:00</div>
-        <div class="time-btn" onclick="selectTime('13:00', this)">13:00</div>
-        <div class="time-btn" onclick="selectTime('14:00', this)">14:00</div>
-        <div class="time-btn" onclick="selectTime('15:00', this)">15:00</div>
-        <div class="time-btn" onclick="selectTime('16:00', this)">16:00</div>
-        <div class="time-btn" onclick="selectTime('17:00', this)">17:00</div>
-        <div class="time-btn" onclick="selectTime('18:00', this)">18:00</div>
-      </div>
-      <button class="pay-btn" id="book-time-btn" disabled onclick="submitBooking()">Записаться ✓</button>
-    </div>
-  </div>
-
-  <div class="booking-step" id="book-step-4">
-    <div style="text-align:center; padding: 40px 20px;">
-      <div style="font-size: 64px; margin-bottom: 16px;">✅</div>
-      <div style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">Запись оформлена!</div>
-      <div style="font-size: 15px; color: var(--muted); margin-bottom: 6px;" id="book-confirm-text"></div>
-      <div style="font-size: 13px; color: var(--muted); margin-bottom: 24px;">Если планы изменятся — напиши @dortwe</div>
-      <button class="pay-btn" onclick="resetBook()">Отлично!</button>
+      <div id="review-done" style="display:none;text-align:center;font-size:14px;color:var(--color-text-secondary)">Спасибо за отзыв! 🌟</div>
     </div>
   </div>
 </div>
 
-<!-- БАЛЛЫ -->
-<div class="page" id="page-points">
-  <div class="card">
-    <div class="points-big">
-      <div class="points-num" id="points-display">0</div>
-      <div class="points-label">баллов на счету</div>
-    </div>
-    <div style="background: #eff6ff; border-radius: 12px; padding: 12px; text-align: center; font-size: 13px; color: var(--accent);">
-      💡 10% от каждой оплаты начисляется баллами
-    </div>
+<!-- BOOKING -->
+<div id="screen-booking" class="screen">
+  <div id="book-step1" class="booking-step active">
+    <div class="card-title" style="font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px">Выбери услугу</div>
+    <button class="service-btn" onclick="bookService('Без сушки (Эконом)','600')">
+      <span>💧 Без сушки — Эконом</span>
+      <span class="service-price">600 ₽</span>
+    </button>
+    <button class="service-btn" onclick="bookService('Мойка кузова (Стандарт)','650')">
+      <span>🚗 Кузов + Диски + Крыша</span>
+      <span class="service-price">от 650 ₽</span>
+    </button>
+    <button class="service-btn" onclick="bookService('Премиум с полировкой','800')">
+      <span>✨ Премиум с полировкой</span>
+      <span class="service-price">800 ₽</span>
+    </button>
+    <button class="service-btn" onclick="bookService('Салон','400')">
+      <span>🪑 Салон</span>
+      <span class="service-price">от 400 ₽</span>
+    </button>
+    <button class="service-btn" onclick="bookService('Полная мойка','1050')">
+      <span>🚗🪑 Полная мойка</span>
+      <span class="service-price">от 1050 ₽</span>
+    </button>
   </div>
 
-  <div class="card">
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-num" id="total-display">0 ₽</div>
-        <div class="stat-label">потрачено</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="washes-display">0</div>
-        <div class="stat-label">моек</div>
-      </div>
+  <div id="book-step2" class="booking-step" style="display:none">
+    <div class="step-header">
+      <button class="step-back" onclick="bookGoto(1)">&#8592;</button>
+      <div style="font-size:15px;font-weight:500;color:var(--color-text-primary)">Выбери дату</div>
     </div>
+    <div id="book-dates"></div>
   </div>
 
-  <div class="card" id="history-card">
+  <div id="book-step3" class="booking-step" style="display:none">
+    <div class="step-header">
+      <button class="step-back" onclick="bookGoto(2)">&#8592;</button>
+      <div style="font-size:15px;font-weight:500;color:var(--color-text-primary)">Выбери время</div>
+    </div>
+    <div class="time-grid" id="book-times"></div>
+  </div>
+
+  <div id="book-step4" class="booking-step" style="display:none">
+    <div class="card success-box">
+      <div class="success-icon">✓</div>
+      <div style="font-size:17px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px">Запись оформлена!</div>
+      <div id="book-confirm-text" style="font-size:14px;color:var(--color-text-secondary)"></div>
+      <div style="margin-top:10px;font-size:13px;color:var(--color-text-secondary)">Если планы изменятся — напишите @dortwe</div>
+      <button class="btn btn-secondary" style="margin-top:16px" onclick="bookReset()">На главную</button>
+    </div>
+  </div>
+</div>
+
+<!-- POINTS -->
+<div id="screen-points" class="screen">
+  <div class="stat-grid">
+    <div class="stat">
+      <div class="stat-label">Баллов на счету</div>
+      <div class="stat-val" id="pts-balance">0 ₽</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Потрачено всего</div>
+      <div class="stat-val" id="pts-total">0 ₽</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Как работают баллы</div>
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-title">10% с каждой мойки</div><div class="tl-sub">Автоматически после подтверждения оплаты</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-title">+100 баллов за реферала</div><div class="tl-sub">Пригласи друга по своей ссылке</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-title">Списание у администратора</div><div class="tl-sub">Напишите @dortwe чтобы оплатить баллами</div></div>
+    </div>
+  </div>
+  <div class="card">
     <div class="card-title">История моек</div>
-    <div id="history-list">
-      <div style="text-align: center; padding: 20px; color: var(--muted); font-size: 14px;">
-        Моек пока не было 🚗
-      </div>
-    </div>
-  </div>
-
-  <div class="card" style="background: var(--green-bg);">
-    <div style="font-size: 14px; color: #166534; font-weight: 600; margin-bottom: 6px;">
-      💎 Как списать баллы?
-    </div>
-    <div style="font-size: 13px; color: #166534;">
-      Напиши администратору <strong>@dortwe</strong> — он спишет баллы при следующей оплате
-    </div>
+    <div id="pts-history" style="font-size:14px;color:var(--color-text-secondary)">Моек пока не было 🚗</div>
   </div>
 </div>
 
-<!-- РЕФЕРАЛ -->
-<div class="page" id="page-ref">
+<!-- PRICE -->
+<div id="screen-price" class="screen">
   <div class="card">
-    <div class="card-title">Реферальная программа</div>
-    <div style="font-size: 16px; font-weight: 700; margin-bottom: 14px;">
-      Приглашай друзей — получай баллы! 🎉
-    </div>
-
-    <div class="ref-bonus">
-      <div class="ref-bonus-icon">💎</div>
-      <div>
-        <div class="ref-bonus-text">+100 баллов</div>
-        <div class="ref-bonus-sub">за каждого приглашённого друга</div>
-      </div>
-    </div>
-
-    <div class="card-title" style="margin-top: 8px;">Твоя ссылка</div>
-    <div class="ref-link-box" id="ref-link">Загрузка...</div>
-    <button class="pay-btn" onclick="shareRef()">📤 Поделиться ссылкой</button>
+    <div class="card-title">Китайские марки <span class="badge badge-green">стандартная цена</span></div>
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:10px">Chery, Geely, Haval, Changan, BYD, Omoda, Jaecoo, Exeed, Tank, Jetour</div>
+    <div class="price-row"><span class="price-label">💧 Без сушки — Эконом</span><span class="price-val">600 ₽</span></div>
+    <div class="price-row"><span class="price-label">🚗 Кузов + Диски + Крыша</span><span class="price-val">650 ₽</span></div>
+    <div class="price-row"><span class="price-label">✨ Премиум с полировкой</span><span class="price-val">800 ₽</span></div>
+    <div class="price-row"><span class="price-label">🪑 Салон</span><span class="price-val">400 ₽</span></div>
+    <div class="price-row"><span class="price-label">🚗🪑 Полная мойка</span><span class="price-val">1050 ₽</span></div>
   </div>
+  <div class="card">
+    <div class="card-title">Остальные марки <span class="badge">+100 ₽</span></div>
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:10px">Lada, Toyota, Kia, Hyundai, BMW, Mercedes, Audi и другие</div>
+    <div class="price-row"><span class="price-label">💧 Без сушки — Эконом</span><span class="price-val">600 ₽</span></div>
+    <div class="price-row"><span class="price-label">🚗 Кузов + Диски + Крыша</span><span class="price-val">750 ₽</span></div>
+    <div class="price-row"><span class="price-label">✨ Премиум с полировкой</span><span class="price-val">900 ₽</span></div>
+    <div class="price-row"><span class="price-label">🪑 Салон</span><span class="price-val">500 ₽</span></div>
+    <div class="price-row"><span class="price-label">🚗🪑 Полная мойка</span><span class="price-val">1150 ₽</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Бонусная программа</div>
+    <div style="font-size:14px;color:var(--color-text-primary)">С каждой покупки начисляем <strong>10% баллами</strong></div>
+    <div style="font-size:13px;color:var(--color-text-secondary);margin-top:6px">Баллы можно использовать для оплаты следующих визитов</div>
+  </div>
+</div>
 
+<!-- REVIEWS -->
+<div id="screen-reviews" class="screen">
+  <div class="card" id="reviews-avg" style="text-align:center;padding:16px">
+    <div style="font-size:28px;font-weight:500;color:var(--color-text-primary)" id="avg-num">—</div>
+    <div style="font-size:14px;color:var(--color-text-secondary)" id="avg-label">Нет отзывов</div>
+  </div>
+  <div id="reviews-list"></div>
+</div>
+
+<!-- REFERRAL -->
+<div id="screen-referral" class="screen">
+  <div class="card" style="text-align:center;padding:20px">
+    <div style="font-size:32px;margin-bottom:8px">🎁</div>
+    <div style="font-size:16px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px">Реферальная программа</div>
+    <div style="font-size:14px;color:var(--color-text-secondary)">Приглашай друзей — получай баллы!</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Твои бонусы</div>
+    <div class="price-row"><span class="price-label">За каждого друга</span><span class="price-val">+100 баллов</span></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Твоя реферальная ссылка</div>
+    <div class="ref-code" id="ref-code" onclick="copyRef()" title="Нажмите чтобы скопировать">REF001</div>
+    <div style="font-size:12px;color:var(--color-text-secondary);text-align:center">Нажмите на код чтобы скопировать</div>
+    <div id="ref-copied" style="display:none;text-align:center;font-size:13px;color:#166534;margin-top:6px">Скопировано!</div>
+  </div>
   <div class="card">
     <div class="card-title">Как это работает</div>
-    <div style="font-size: 14px; color: var(--text); line-height: 1.7;">
-      1️⃣ Поделись ссылкой с другом<br>
-      2️⃣ Друг регистрируется в боте<br>
-      3️⃣ Тебе автоматически приходит <strong>+100 баллов</strong><br>
-      4️⃣ Баллами можно оплачивать мойки!
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-title">Поделись ссылкой</div><div class="tl-sub">Отправь другу свой реферальный код</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-title">Друг регистрируется</div><div class="tl-sub">Он открывает бот по твоей ссылке</div></div>
+      <div class="tl-item"><div class="tl-dot"></div><div class="tl-title">+100 баллов тебе</div><div class="tl-sub">Начисляются автоматически</div></div>
     </div>
   </div>
 </div>
 
-<script>
-const tg = window.Telegram?.WebApp;
-if (tg) {
-  tg.ready();
-  tg.expand();
-}
-
-const userData = {
-  points: 0,
-  total: 0,
-  washes: 0,
-  history: [],
-  refCode: 'DEMO01'
-};
-
-let selectedService = '';
-let selectedPrice = 0;
-let selectedDate = '';
-let selectedTime = '';
-let bookServiceName = '';
-
-function showPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  const tabs = ['pay', 'book', 'points', 'ref'];
-  const idx = tabs.indexOf(name);
-  document.querySelectorAll('.nav-tab')[idx].classList.add('active');
-}
-
-function selectService(name, price) {
-  selectedService = name;
-  selectedPrice = price;
-  const bonus = Math.round(price * 0.10);
-  document.getElementById('pay-service-name').textContent = name;
-  document.getElementById('pay-service-price').textContent = price + ' ₽';
-  document.getElementById('pay-amount-display').textContent = price + ' ₽';
-  document.getElementById('pay-bonus').textContent = bonus;
-  document.getElementById('pay-step-1').style.display = 'none';
-  document.getElementById('pay-step-2').style.display = 'block';
-  document.getElementById('pay-step-2').classList.add('active');
-}
-
-function backToServices() {
-  document.getElementById('pay-step-1').style.display = 'block';
-  document.getElementById('pay-step-2').style.display = 'none';
-}
-
-function copyPhone() {
-  navigator.clipboard?.writeText('+79615255416').catch(() => {});
-  const btn = event.target;
-  btn.textContent = '✅ Скопировано!';
-  setTimeout(() => btn.textContent = '📋 Скопировать номер', 2000);
-}
-
-function confirmPaid() {
-  if (tg) {
-    tg.sendData(JSON.stringify({
-      action: 'paid',
-      service: selectedService,
-      amount: selectedPrice
-    }));
-  }
-  document.getElementById('pay-step-2').style.display = 'none';
-  const s3 = document.getElementById('pay-step-3');
-  s3.style.display = 'block';
-  s3.classList.add('active');
-}
-
-function resetPay() {
-  document.getElementById('pay-step-3').style.display = 'none';
-  document.getElementById('pay-step-3').classList.remove('active');
-  document.getElementById('pay-step-1').style.display = 'block';
-  showPage('pay');
-}
-
-function buildDates() {
-  const grid = document.getElementById('date-grid');
-  grid.innerHTML = '';
-  const days = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-  const months = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
-  for (let i = 1; i <= 6; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() + i);
-    const btn = document.createElement('div');
-    btn.className = 'date-btn';
-    btn.innerHTML = `<div class="date-day">${d.getDate()}</div><div class="date-weekday">${days[d.getDay()]} ${months[d.getMonth()]}</div>`;
-    const dateStr = d.toISOString().split('T')[0];
-    btn.onclick = function() {
-      document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('selected'));
-      this.classList.add('selected');
-      selectedDate = dateStr;
-      document.getElementById('book-date-btn').disabled = false;
-    };
-    grid.appendChild(btn);
-  }
-}
-
-function bookService(name, price) {
-  bookServiceName = name;
-  selectedPrice = price;
-  buildDates();
-  document.getElementById('book-step-1').classList.remove('active');
-  document.getElementById('book-step-2').classList.add('active');
-}
-
-function bookBack(step) {
-  document.querySelectorAll('.booking-step').forEach(s => s.classList.remove('active'));
-  document.getElementById('book-step-' + step).classList.add('active');
-}
-
-function goBookStep3() {
-  if (!selectedDate) return;
-  document.getElementById('book-step-2').classList.remove('active');
-  document.getElementById('book-step-3').classList.add('active');
-}
-
-function selectTime(time, el) {
-  document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedTime = time;
-  document.getElementById('book-time-btn').disabled = false;
-}
-
-function submitBooking() {
-  if (!selectedDate || !selectedTime) return;
-  if (tg) {
-    tg.sendData(JSON.stringify({
-      action: 'booking',
-      service: bookServiceName,
-      date: selectedDate,
-      time: selectedTime
-    }));
-  }
-  const d = new Date(selectedDate);
-  const fmt = d.toLocaleDateString('ru-RU', {day:'numeric', month:'long'});
-  document.getElementById('book-confirm-text').textContent =
-    bookServiceName + ' • ' + fmt + ' в ' + selectedTime;
-  document.getElementById('book-step-3').classList.remove('active');
-  document.getElementById('book-step-4').classList.add('active');
-}
-
-function resetBook() {
-  document.querySelectorAll('.booking-step').forEach(s => s.classList.remove('active'));
-  document.getElementById('book-step-1').classList.add('active');
-  selectedDate = '';
-  selectedTime = '';
-  showPage('book');
-}
-
-function shareRef() {
-  const link = 'https://t.me/your_bot?start=' + userData.refCode;
-  if (tg?.shareUrl) {
-    tg.shareUrl(link, 'Помойка машину с выгодой! 🚗 Запишись через ZevaAUTO:');
-  } else {
-    navigator.clipboard?.writeText(link).catch(() => {});
-    alert('Ссылка скопирована!');
-  }
-}
-
-function updateUI() {
-  document.getElementById('points-display').textContent = userData.points;
-  document.getElementById('total-display').textContent = userData.total + ' ₽';
-  document.getElementById('washes-display').textContent = userData.washes;
-  document.getElementById('header-points').innerHTML = '<span>баллов: </span>' + userData.points;
-
-  const bot = tg?.initDataUnsafe?.bot?.username || 'your_bot';
-  const code = tg?.initDataUnsafe?.user?.id
-    ? userData.refCode
-    : 'DEMO01';
-  document.getElementById('ref-link').textContent = 'https://t.me/' + bot + '?start=' + code;
-
-  const list = document.getElementById('history-list');
-  if (userData.history.length > 0) {
-    list.innerHTML = userData.history.map(h => `
-      <div class="history-item">
-        <div class="history-dot">🚗</div>
-        <div>
-          <div class="history-name">${h.service}</div>
-          <div class="history-date">${h.date}</div>
-        </div>
-        <div class="history-amount">
-          <div class="history-price">${h.amount} ₽</div>
-          <div class="history-bonus">+${h.bonus} ⭐</div>
-        </div>
+<!-- CONTACTS -->
+<div id="screen-contacts" class="screen">
+  <div class="card">
+    <div class="card-title">ZevaAUTO — Контакты</div>
+    <div class="contact-row">
+      <div class="contact-icon">СБП</div>
+      <div class="contact-info">
+        <div class="contact-label">Оплата через СБП</div>
+        <div class="contact-val">+7 961 525-54-16</div>
       </div>
-    `).join('');
-  }
+    </div>
+    <div class="contact-row">
+      <div class="contact-icon">@</div>
+      <div class="contact-info">
+        <div class="contact-label">Администратор</div>
+        <div class="contact-val">@dortwe</div>
+      </div>
+    </div>
+    <div class="contact-row">
+      <div class="contact-icon" style="font-size:11px">10-22</div>
+      <div class="contact-info">
+        <div class="contact-label">Режим работы</div>
+        <div class="contact-val">с 10:00 до 22:00 · Каждый день</div>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="text-align:center;padding:20px">
+    <div style="font-size:32px;margin-bottom:8px">🚗</div>
+    <div style="font-size:14px;color:var(--color-text-secondary)">Работаем каждый день! Ждём вас ✨</div>
+  </div>
+</div>
+
+<!-- SUPPORT -->
+<div id="screen-support" class="screen">
+  <div class="card" style="padding:18px 16px 14px;margin-bottom:10px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent-dark),var(--accent));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 4px 16px rgba(124,127,255,.4)">🤖</div>
+      <div>
+        <div style="font-size:16px;font-weight:700;color:var(--text1)">ИИ-ассистент ZevaAUTO</div>
+        <div style="font-size:12px;font-weight:500;color:var(--green);display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;background:var(--green);border-radius:50%;display:inline-block;box-shadow:0 0 5px var(--green)"></span>Онлайн · отвечает мгновенно</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat messages -->
+  <div id="chat-messages" style="min-height:200px;margin-bottom:10px"></div>
+
+  <!-- Quick questions -->
+  <div id="quick-questions" style="margin-bottom:10px">
+    <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Быстрые вопросы</div>
+    <div style="display:flex;flex-wrap:wrap;gap:7px">
+      <button class="quick-btn" onclick="sendQuick('Какие у вас цены?')">💰 Цены</button>
+      <button class="quick-btn" onclick="sendQuick('Как записаться на мойку?')">📅 Как записаться</button>
+      <button class="quick-btn" onclick="sendQuick('Как работает бонусная программа?')">⭐ Бонусы</button>
+      <button class="quick-btn" onclick="sendQuick('Как оплатить?')">💳 Оплата</button>
+      <button class="quick-btn" onclick="sendQuick('Какие марки авто вы моете?')">🚗 Марки авто</button>
+      <button class="quick-btn" onclick="sendQuick('Где вы находитесь и как с вами связаться?')">📍 Контакты</button>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div style="display:flex;gap:8px;align-items:flex-end">
+    <textarea id="chat-input" placeholder="Напишите вопрос..." rows="1"
+      style="flex:1;padding:12px 14px;font-size:14px;font-weight:500;resize:none;line-height:1.4;font-family:'Inter',sans-serif;min-height:46px;max-height:120px;overflow-y:auto"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"
+      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+    <button id="send-btn" onclick="sendChat()" style="width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,var(--accent-dark),var(--accent));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 3px 12px rgba(124,127,255,.4);transition:transform .18s cubic-bezier(.34,1.56,.64,1)">➤</button>
+  </div>
+</div>
+
+<style>
+.quick-btn{
+  padding:7px 13px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:20px;font-size:12px;font-weight:600;color:var(--text1);
+  cursor:pointer;font-family:'Inter',sans-serif;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1),border-color .15s,background .15s;
+  position:relative;overflow:hidden;
+}
+.quick-btn:active{transform:scale(.94);border-color:var(--accent);background:rgba(124,127,255,.12);color:var(--accent)}
+
+.msg{margin-bottom:10px;display:flex;flex-direction:column;animation:fadeSlideIn .2s ease}
+.msg-user{align-items:flex-end}
+.msg-bot{align-items:flex-start}
+.msg-bubble{max-width:85%;padding:11px 14px;border-radius:16px;font-size:14px;font-weight:500;line-height:1.5}
+.msg-user .msg-bubble{background:linear-gradient(135deg,var(--accent-dark),var(--accent));color:#fff;border-bottom-right-radius:4px}
+.msg-bot .msg-bubble{background:var(--bg2);color:var(--text1);border:1px solid var(--border);border-bottom-left-radius:4px}
+.msg-time{font-size:10px;font-weight:600;color:var(--text2);margin-top:3px;padding:0 4px}
+
+.typing-dots span{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--text2);margin:0 2px;animation:typingBounce 1.2s infinite}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+</style>
+
+<script>
+const AI_SYSTEM = `Ты — дружелюбный ИИ-ассистент автомойки ZevaAUTO. Отвечай ТОЛЬКО на русском языке. Будь коротким и по делу (2-4 предложения максимум). Используй эмодзи.
+
+Информация о мойке:
+- Название: ZevaAUTO
+- Режим работы: с 10:00 до 22:00, каждый день
+- Оплата: через СБП на номер +7 961 525-54-16 (получатель ZevaAUTO)
+- Администратор: @dortwe в Telegram
+
+Услуги и цены:
+- 💧 Без сушки (Эконом): 600 ₽
+- 🚗 Кузов + Диски + Крыша (Стандарт): 650 ₽ (китайские марки), 750 ₽ (другие)
+- ✨ Премиум с полировкой: 800 ₽ (китайские), 900 ₽ (другие)
+- 🪑 Салон: 400 ₽ (китайские), 500 ₽ (другие)
+- 🚗🪑 Полная мойка: 1050 ₽ (китайские), 1150 ₽ (другие)
+
+Китайские марки (стандартная цена): BYD, Changan, Chery, Exeed, Geely, Haval, Jaecoo, Jetour, Omoda, Tank
+Другие марки (+100 ₽): Lada, Toyota, Kia, Hyundai, BMW, Mercedes, Audi, Volkswagen и т.д.
+
+Бонусная программа:
+- 10% баллами с каждой мойки
+- +100 баллов за приглашённого друга
+- Списание баллов через @dortwe
+
+Запись: через мини-апп (кнопка "Запись") или написать @dortwe`;
+
+let chatHistory = [];
+let aiTyping = false;
+
+function nowTime(){
+  return new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
 }
 
-updateUI();
+function addMessage(text, role){
+  const wrap = document.createElement('div');
+  wrap.className = `msg msg-${role}`;
+  wrap.innerHTML = `
+    <div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div>
+    <div class="msg-time">${nowTime()}</div>
+  `;
+  document.getElementById('chat-messages').appendChild(wrap);
+  wrap.scrollIntoView({behavior:'smooth',block:'end'});
+}
+
+function showTyping(){
+  const wrap = document.createElement('div');
+  wrap.className = 'msg msg-bot';
+  wrap.id = 'typing-indicator';
+  wrap.innerHTML = `<div class="msg-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  document.getElementById('chat-messages').appendChild(wrap);
+  wrap.scrollIntoView({behavior:'smooth',block:'end'});
+}
+
+function removeTyping(){
+  const t = document.getElementById('typing-indicator');
+  if(t) t.remove();
+}
+
+async function sendChat(){
+  if(aiTyping) return;
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('quick-questions').style.display = 'none';
+  sendMessage(text);
+}
+
+function sendQuick(text){
+  document.getElementById('quick-questions').style.display = 'none';
+  sendMessage(text);
+}
+
+async function sendMessage(text){
+  if(aiTyping) return;
+  aiTyping = true;
+  addMessage(text, 'user');
+  chatHistory.push({role:'user', content:text});
+
+  const btn = document.getElementById('send-btn');
+  btn.style.opacity = '.5';
+  showTyping();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:400,
+        system: AI_SYSTEM,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'Извините, не смог ответить 😕';
+    removeTyping();
+    addMessage(reply, 'bot');
+    chatHistory.push({role:'assistant', content:reply});
+  } catch(e){
+    removeTyping();
+    addMessage('Ошибка соединения 😕 Попробуйте позже или напишите @dortwe', 'bot');
+  }
+  aiTyping = false;
+  btn.style.opacity = '1';
+}
+
+// Welcome message
+setTimeout(()=>{
+  addMessage('Привет! 👋 Я ИИ-ассистент ZevaAUTO. Могу ответить на вопросы о ценах, записи, оплате и бонусах. Чем помочь?', 'bot');
+}, 300);
+
+const CHINESE=['BYD','Changan','Chery','Exeed','Geely','Haval','Jaecoo','Jetour','Omoda','Tank'];
+const OTHER=['Lada','Toyota','Kia','Hyundai','Volkswagen','Skoda','Nissan','Renault','BMW','Mercedes','Audi','Ford','Mazda','Mitsubishi','Honda','Lexus','Другая марка'];
+let payBrand='',payService='',payAmount=0,payBonus=0;
+let bookSvc='',bookDate='',bookTime='';
+let starRating=0;
+let state={points:0,total:0,history:[],reviews:[{name:'Иван',rating:5,text:'Отличная мойка! Всё быстро и качественно',date:'2025-04-10'},{name:'Мария',rating:4,text:'Хорошо вымыли, буду приходить ещё',date:'2025-04-08'}]};
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  const idx={'home':0,'pay':1,'booking':2,'points':3,'price':4,'reviews':5,'referral':6,'contacts':7,'support':8};
+  document.querySelectorAll('.nav-btn')[idx[id]].classList.add('active');
+  if(id==='points') renderPoints();
+  if(id==='reviews') renderReviews();
+  window.scrollTo(0,0);
+}
+
+function buildBrandBtns(){
+  const cn=document.getElementById('brand-cn');
+  const oth=document.getElementById('brand-other');
+  CHINESE.forEach(b=>{
+    const btn=document.createElement('button');
+    btn.className='brand-btn';btn.textContent=b;
+    btn.onclick=()=>selectBrand(b,false,btn);cn.appendChild(btn);
+  });
+  OTHER.forEach(b=>{
+    const btn=document.createElement('button');
+    btn.className='brand-btn';btn.textContent=b;
+    btn.onclick=()=>selectBrand(b,true,btn);oth.appendChild(btn);
+  });
+}
+
+function selectBrand(brand,isSurcharge,btn){
+  document.querySelectorAll('.brand-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  payBrand=brand;
+  const surcharge=isSurcharge?100:0;
+  const prices={car:650+surcharge,salon:400+surcharge,full:1050+surcharge,premium:800+surcharge};
+  const note=document.getElementById('pay-brand-note');
+  note.innerHTML=`Марка: <strong>${brand}</strong>${isSurcharge?' &nbsp;·&nbsp; +100 ₽ доплата':'&nbsp;·&nbsp; Стандартная цена'}`;
+  const svcs=document.getElementById('pay-services');
+  svcs.innerHTML=`
+    <button class="service-btn" onclick="selectService('Без сушки (Эконом)',600)"><span>💧 Без сушки — Эконом</span><span class="service-price">600 ₽</span></button>
+    <button class="service-btn" onclick="selectService('Мойка кузова (Стандарт)',${prices.car})"><span>🚗 Кузов + Диски + Крыша</span><span class="service-price">${prices.car} ₽</span></button>
+    <button class="service-btn" onclick="selectService('Премиум с полировкой',${prices.premium})"><span>✨ Премиум с полировкой</span><span class="service-price">${prices.premium} ₽</span></button>
+    <button class="service-btn" onclick="selectService('Салон',${prices.salon})"><span>🪑 Салон</span><span class="service-price">${prices.salon} ₽</span></button>
+    <button class="service-btn" onclick="selectService('Полная мойка',${prices.full})"><span>🚗🪑 Полная мойка</span><span class="service-price">${prices.full} ₽</span></button>
+  `;
+  payGoto(2);
+}
+
+function selectService(svc,amount){
+  payService=svc;payAmount=amount;payBonus=Math.round(amount*0.1);
+  document.getElementById('pay-summary').innerHTML=`<strong>${svc}</strong> · ${payBrand}<br>Сумма: <strong>${amount} ₽</strong><br>Начислится баллов: <strong>+${payBonus} ₽</strong>`;
+  payGoto(3);
+}
+
+function payGoto(step){
+  document.querySelectorAll('.pay-flow').forEach(el=>{el.classList.remove('active');el.classList.add('hidden')});
+  const el=document.getElementById('pay-step'+step);
+  el.classList.remove('hidden');el.classList.add('active');
+}
+
+function payConfirm(){
+  state.points+=payBonus;state.total+=payAmount;
+  state.history.unshift({date:new Date().toISOString().slice(0,10),service:payService,amount:payAmount,bonus:payBonus});
+  buildStars();
+  payGoto(4);
+}
+
+function payReset(){
+  payGoto(1);
+  document.querySelectorAll('.brand-btn').forEach(b=>b.classList.remove('selected'));
+  showScreen('home');
+}
+
+function buildStars(){
+  starRating=0;
+  const row=document.getElementById('stars-row');
+  row.innerHTML='';
+  for(let i=1;i<=5;i++){
+    const s=document.createElement('span');
+    s.className='review-star';s.textContent='★';s.dataset.v=i;
+    s.style.color='#d1d5db';
+    s.onclick=()=>setStars(i);
+    row.appendChild(s);
+  }
+  document.getElementById('review-prompt').style.display='none';
+  document.getElementById('review-done').style.display='none';
+}
+
+function setStars(n){
+  starRating=n;
+  document.querySelectorAll('.review-star').forEach((s,i)=>{s.style.color=i<n?'#f59e0b':'#d1d5db'});
+  document.getElementById('review-prompt').style.display='block';
+}
+
+function submitReview(){
+  const txt=document.getElementById('review-text').value;
+  state.reviews.unshift({name:'Вы',rating:starRating,text:txt||null,date:new Date().toISOString().slice(0,10)});
+  document.getElementById('review-prompt').style.display='none';
+  document.getElementById('review-done').style.display='block';
+}
+
+function skipReview(){
+  document.getElementById('review-prompt').style.display='none';
+  document.getElementById('review-done').style.display='block';
+}
+
+function bookService(svc,amt){
+  bookSvc=svc;
+  const datesDiv=document.getElementById('book-dates');
+  datesDiv.innerHTML='';
+  const days=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  for(let i=1;i<=5;i++){
+    const d=new Date();d.setDate(d.getDate()+i);
+    const label=`${d.getDate().toString().padStart(2,'0')}.${(d.getMonth()+1).toString().padStart(2,'0')} (${days[d.getDay()]})`;
+    const iso=d.toISOString().slice(0,10);
+    const btn=document.createElement('button');
+    btn.className='date-btn';btn.textContent=label;
+    btn.onclick=()=>bookPickDate(iso,label,btn);
+    datesDiv.appendChild(btn);
+  }
+  bookGoto(2);
+}
+
+function bookPickDate(iso,label,btn){
+  document.querySelectorAll('.date-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');bookDate=iso;
+  const timesDiv=document.getElementById('book-times');
+  timesDiv.innerHTML='';
+  ['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00'].forEach(t=>{
+    const b=document.createElement('button');
+    b.className='time-btn';b.textContent=t;
+    b.onclick=()=>bookPickTime(t,label,b);
+    timesDiv.appendChild(b);
+  });
+  bookGoto(3);
+}
+
+function bookPickTime(t,dateLabel,btn){
+  document.querySelectorAll('.time-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');bookTime=t;
+  document.getElementById('book-confirm-text').innerHTML=`🚗 <strong>${bookSvc}</strong><br>📅 ${dateLabel}<br>🕐 ${t}`;
+  bookGoto(4);
+}
+
+function bookGoto(step){
+  document.querySelectorAll('.booking-step').forEach(el=>el.style.display='none');
+  document.getElementById('book-step'+step).style.display='block';
+}
+
+function bookReset(){
+  bookGoto(1);
+  showScreen('home');
+}
+
+function renderPoints(){
+  document.getElementById('pts-balance').textContent=state.points+' ₽';
+  document.getElementById('pts-total').textContent=state.total+' ₽';
+  const hist=document.getElementById('pts-history');
+  if(state.history.length===0){hist.textContent='Моек пока не было 🚗';return;}
+  hist.innerHTML=state.history.slice(0,5).map(p=>`<div style="padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px"><span style="color:var(--color-text-secondary)">${p.date}</span> · ${p.service} · <strong>${p.amount} ₽</strong> · <span style="color:#6366f1">+${p.bonus} ⭐</span></div>`).join('');
+}
+
+function renderReviews(){
+  if(state.reviews.length===0){
+    document.getElementById('avg-num').textContent='—';
+    document.getElementById('avg-label').textContent='Нет отзывов';
+    document.getElementById('reviews-list').innerHTML='';
+    return;
+  }
+  const avg=(state.reviews.reduce((s,r)=>s+r.rating,0)/state.reviews.length).toFixed(1);
+  const stars='★'.repeat(Math.round(avg))+'☆'.repeat(5-Math.round(avg));
+  document.getElementById('avg-num').innerHTML=`<span style="color:#f59e0b">${stars}</span> ${avg}`;
+  document.getElementById('avg-label').textContent=`${state.reviews.length} отзывов`;
+  document.getElementById('reviews-list').innerHTML=state.reviews.map(r=>`
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:14px;font-weight:500;color:var(--color-text-primary)">${r.name}</span>
+        <span style="color:#f59e0b;font-size:15px">${'★'.repeat(r.rating)}<span style="color:#d1d5db">${'★'.repeat(5-r.rating)}</span></span>
+      </div>
+      ${r.text?`<div style="font-size:13px;color:var(--color-text-secondary);font-style:italic">"${r.text}"</div>`:''}
+      <div style="font-size:11px;color:var(--color-text-secondary);margin-top:6px">${r.date}</div>
+    </div>
+  `).join('');
+}
+
+function copyRef(){
+  const code=document.getElementById('ref-code').textContent;
+  navigator.clipboard.writeText('https://t.me/zevaauto_bot?start='+code).catch(()=>{});
+  document.getElementById('ref-copied').style.display='block';
+  setTimeout(()=>document.getElementById('ref-copied').style.display='none',2000);
+}
+
+// Ripple effect on all clickable buttons
+document.addEventListener('pointerdown', function(e){
+  const btn = e.target.closest('.btn,.service-btn,.brand-btn,.date-btn,.time-btn,.ref-code');
+  if(!btn) return;
+  const r = document.createElement('span');
+  r.className = 'ripple-el';
+  const rect = btn.getBoundingClientRect();
+  r.style.left = (e.clientX - rect.left) + 'px';
+  r.style.top = (e.clientY - rect.top) + 'px';
+  btn.appendChild(r);
+  setTimeout(()=>r.remove(), 600);
+});
+
+buildBrandBtns();
 </script>
 </body>
 </html>
